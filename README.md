@@ -1,5 +1,5 @@
 # TRANSFORMER-INTRO
-变形金刚？All you need is Attention？Encode？Decoder？Let's figure it out !
+***变形金刚？All you need is Attention？Encoder？Decoder？Let's figure it out !***
 
 ## 模型结构
 
@@ -7,6 +7,7 @@
 
 
 
+```
 模型分为`Encoder`(编码器)和`Decoder`(解码器)两个部分，分别对应上图中的左右两部分。
 
 其中编码器由N个相同的层堆叠在一起(后面的代码取N=6)，每一层又有两个子层：
@@ -28,18 +29,59 @@
 模型的输入由`Input Embedding`和`Positional Encoding`(位置编码)两部分组合而成，
 
 模型的输出由Decoder的输出简单的经过softmax得到。
+```
+
+
 
 ## 1.Embeeding层
 
+```
+Embedding层的作用是将某种格式的输入数据，
 
+例如文本，转变为模型可以处理的向量表示，
+
+来描述原始数据所包含的信息。
+
+Embedding层输出的可以理解为当前时间步的特征，
+
+如果是文本任务，这里就可以是Word Embedding，
+
+如果是其他任务，就可以是任何合理方法所提取的特征。
+
+核心是借助torch提供的nn.Embedding
+```
 
 ## 2.位置编码
 
+```
+位置编码 PositionalEncoding
 
+Positional Encodding位置编码的作用是为模型提供当前时间步的前后出现顺序的信息。
+
+因为Transformer不像RNN那样的循环结构有前后不同时间步输入间天然的先后顺序，
+
+所有的时间步是同时输入，并行推理的，因此在时间步的特征中融合进位置编码的信息是合理的。
+
+位置编码可以有很多选择，可以是固定的，也可以设置成可学习的参数。
+
+我们使用固定的位置编码,使用不同频率的sin和cos函数来进行位置编码
+```
+
+<img src=".\figs\gongshi.png" align="middle" alt="gongshi" style="zoom:75%;" />
+
+```
+可以认为，最终模型的输入是若干个时间步对应的embedding，
+
+每一个时间步对应一个embedding，可以理解为是当前时间步的一个综合的特征信息，
+
+即包含了本身的语义信息，又包含了当前时间步在整个句子中的位置信息
+```
 
 ## 3.编码器
 
-
+```
+编码器作用是用于对输入进行特征提取，为解码环节提供有效的语义信息
+```
 
 ## 4.编码器层
 
