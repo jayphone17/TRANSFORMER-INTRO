@@ -22,7 +22,7 @@
 
 对于解码器的每一层，除了编码器中的两个子层`Multi-Head Attention`和`Feed Forward`，
 
-解码器还包含一个子层`Masked Multi-Head Attention`，
+解码器还包含一个子层`Masked Multi-Head Attention`，
 
 如图中所示每个子层同样也用了residual以及layer normalization。
 
