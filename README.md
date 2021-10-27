@@ -102,10 +102,9 @@ Positional Encodding位置编码的作用是为模型提供当前时间步的前
 
 注意力计算：它需要三个指定的输入Q（query），K（key），V（value），然后通过下面公式得到注意力的计算结果。
 ```
+<img src=".\figs\gongshi2.png" align="middle" alt="structure"  />
 
-![gongshi2](.\figs\gongshi2.png)
-
-![4](.\figs\4.png)
+<img src=".\figs\4.png" align="middle" alt="structure"  />
 
 ```
 当前时间步的注意力计算结果，是一个组系数 * 每个时间步的特征向量value的累加，
