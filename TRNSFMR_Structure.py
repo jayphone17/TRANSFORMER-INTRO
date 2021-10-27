@@ -106,11 +106,10 @@ class Encoder(nn.Module):
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
 
-    def forward(self):
+    def forward(self, x, mask):
         for layer in self.layers:
             x = layer(x, mask)
         return self.norm(x)
-
 
 
 """
@@ -120,14 +119,68 @@ class Encoder(nn.Module):
 第一个子层包括一个多头自注意力层和规范化层以及一个残差连接
 第二个子层包括一个前馈全连接层和规范化层以及一个残差连接
 """
+class SublayerConnection(nn.Module):
+    def __init__(self, size, dropout):
+        super(SublayerConnection, self).__init__()
+        self.norm = LayerNorm(size)
+        self.dropout = nn.Dropout(dropout)
 
+    def forward(self,x,sublayer):
+        # 原paper的方案
+        # sublayer_out = sublayer(x)
+        # x_norm = self.norm(x + self.dropout(sublayer_out))
+
+        # 稍加调整的版本
+        sublayer_out = sublayer(x)
+        sublayer_out = self.dropout(sublayer_out)
+        x_norm = x + self.norm(sublayer_out)
+        return x_norm
+
+class EncoderLayer(nn.Module):
+    def __init__(self, size, self_attn, feed_forward, dropout):
+        super(EncoderLayer, self).__init__()
+        self.self_attn = self_attn
+        self.feed_forward = feed_forward
+        self.sublayer = clones(SublayerConnection(size, dropout),2)
+        self.size = size
+
+    def forward(self,x,mask):
+        x = self.sublayer[0](x,lambda x: self.self_attn(x,x,x,mask))
+        z = self.sublayer[1](x,self.feed_forward)
+        return z
 """
 注意力机制 attention
+
+人类在观察事物时，无法同时仔细观察眼前的一切，只能聚焦到某一个局部。
+
+通常我们大脑在简单了解眼前的场景后，能够很快把注意力聚焦到最有价值的局部来仔细观察，
+
+从而作出有效判断。或许是基于这样的启发，想到了在算法中利用注意力机制。
 """
+def attention(query, key, value, mask = None, dropout = None):
+    # 取query的最后一维的大小，对应词嵌入维度
+    d_k = query.size(-1)
+    # 注意力公式
+    # 这里面key是将最后两个维度进行转置，再除以缩放系数得到注意力得分张量scores
+    scores = torch.matmul((query, key.transpose(-2,-1))/math.sqrt(d_k))
+
+    # 判断是否适用掩码张量
+    if mask is not None:
+        # 使用tensor的masked_fill方法，将掩码张量和scores张量每个位置一一比较，如果掩码张量则对应的scores张量用-1e9这个置来替换
+        scores = scores.masked_fill(mask == 0,-1e9)
+
+    # 对scores的最后一维进行softmax操作，使用F.softmax方法，这样获得最终的注意力张量
+    p_attn = F.softmax(scores,dim = -1)
+
+    if dropout is None:
+        p_attn = dropout(p_attn)
+
+    return torch.matmul(p_attn, value), p_attn
 
 """
 多头注意力机制
 """
+
 
 
 """
