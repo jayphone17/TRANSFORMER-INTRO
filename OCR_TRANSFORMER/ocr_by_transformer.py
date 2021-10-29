@@ -15,7 +15,6 @@ OCR识别任务
 只不过输入的序列信息是由图片形式表示的。
 
 """
-
 import os
 import time
 import copy
@@ -31,6 +30,7 @@ import torchvision.transforms as transforms
 from analysis_recognition_dataset import load_lbl2id_map, statistics_max_len_label
 from transformer import *
 from train_utils import *
+
 
 class Recognition_Dataset(object):
 
