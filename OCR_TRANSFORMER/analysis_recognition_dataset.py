@@ -15,8 +15,6 @@
 """
 import os
 import cv2
-
-
 def statistics_label_cnt(lbl_path, lbl_cnt_map):
     """
     统计标签文件中都包含哪些label以及各自出现的次数
